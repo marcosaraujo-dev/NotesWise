@@ -1,0 +1,11 @@
+# Força quebras de linha consistentes
+* text=auto
+
+# Arquivos específicos do Windows
+*.cs text eol=crlf
+*.csproj text eol=crlf
+*.sln text eol=crlf
+
+# Arquivos que devem manter formato original
+*.png binary
+*.jpg binary

@@ -42,6 +42,8 @@ public class CreateNoteRequest
     public string? Summary { get; set; }
     public string? AudioUrl { get; set; }
     public string? CategoryId { get; set; }
+    public bool GenerateSummary { get; set; } = false;
+    public string? AiProvider { get; set; }
 }
 
 public class UpdateNoteRequest
@@ -51,4 +53,6 @@ public class UpdateNoteRequest
     public string? Summary { get; set; }
     public string? AudioUrl { get; set; }
     public string? CategoryId { get; set; }
+    public bool GenerateSummary { get; set; } = false;
+    public string? AiProvider { get; set; }
 }

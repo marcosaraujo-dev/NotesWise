@@ -1,10 +1,14 @@
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using NotesWise.API.Endpoints;
-using NotesWise.API.Middleware;
+using NotesWise.API.Extensions;
 using NotesWise.API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
+
+builder.Services.AddEndpointsApiExplorer();
+
 
 // Add services to the container
 builder.Services.AddOpenApi();
@@ -62,11 +66,12 @@ builder.Services.AddScoped<IMongoDatabase>(serviceProvider =>
     return client.GetDatabase(settings.DatabaseName);
 });
 
-// Register MongoDB data store
+// AI Services
+builder.Services.AddAiServices(builder.Configuration);
+
+// Data Store
 builder.Services.AddScoped<IDataStore, MongoDataStore>();
 
-builder.Services.AddScoped<IAiService, AiService>();
-builder.Services.AddHttpClient<IAiService, AiService>();
 
 // Add logging
 builder.Services.AddLogging();
@@ -96,6 +101,7 @@ if (!app.Environment.IsDevelopment())
 app.MapCategoryEndpoints();
 app.MapNoteEndpoints();
 app.MapFlashcardEndpoints();
+app.MapAiEndpoints();
 
 // Health check endpoint
 app.MapGet("/health", () => Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow }))

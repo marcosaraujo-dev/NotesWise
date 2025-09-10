@@ -6,6 +6,22 @@ using System.Threading.Tasks;
 
 namespace NotesWise.API.Services.Models
 {
+    public class AiRequest
+    {
+        public string Content { get; set; } = string.Empty;
+        public string? Model { get; set; }
+        public Dictionary<string, object>? Parameters { get; set; }
+    }
+
+    public class AiResponse
+    {
+        public string Content { get; set; } = string.Empty;
+        public bool IsSuccess { get; set; }
+        public string? Error { get; set; }
+        public string? Provider { get; set; }
+        public string? Model { get; set; }
+    }
+
     public class OpenAiRequest
     {
         public string model { get; set; }

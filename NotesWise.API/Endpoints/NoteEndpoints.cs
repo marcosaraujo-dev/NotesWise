@@ -1,3 +1,5 @@
+using MongoDB.Bson;
+using MongoDB.Driver;
 using NotesWise.API.Extensions;
 using NotesWise.API.Models;
 using NotesWise.API.Services;
@@ -73,8 +75,13 @@ public static class NoteEndpoints
     {
         try
         {
-            //var userId = context.GetUserIdOrThrow();
-            
+           
+            if (string.IsNullOrWhiteSpace(request.Title))
+                return Results.BadRequest("Title is required");
+
+            if (string.IsNullOrWhiteSpace(request.Content))
+                return Results.BadRequest("Content is required");
+
             // Validate category exists if provided
             if (!string.IsNullOrEmpty(request.CategoryId))
             {
@@ -87,18 +94,38 @@ public static class NoteEndpoints
 
             var note = new Note
             {
-                Title = request.Title,
-                Content = request.Content,
+                
+                Title = request.Title.Trim(),
+                Content = request.Content.Trim(),
                 Summary = request.Summary,
                 AudioUrl = request.AudioUrl,
                 CategoryId = request.CategoryId,
+                CreatedAt = DateTime.UtcNow,
                 UserId = new Guid("d2be9c69-c33c-4774-9d52-a4357383c442").ToString()
             };
-
-            var summary = await aiService.GenerateSummaryAsync(request.Content);
-            note.Summary = summary;
-
             var createdNote = await dataStore.CreateNoteAsync(note);
+
+            if (request.GenerateSummary && !string.IsNullOrWhiteSpace(note.Content))
+            {
+                try
+                {
+                    // Agora pode especificar o provider ou usar o padrão
+                    var summary = await aiService.GenerateSummaryAsync(
+                        note.Content,
+                        request.AiProvider); // parâmetro opcional
+
+                    if (!string.IsNullOrEmpty(summary))
+                    {
+                        createdNote.Summary = summary;
+                        await dataStore.UpdateNoteAsync(createdNote);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Log do erro de IA, mas não falha a criação da nota
+                    Console.WriteLine($"Erro ao gerar resumo: {ex.Message}");
+                }
+            }
 
             return Results.Created($"/api/notes/{createdNote.Id}", createdNote);
         }
@@ -106,52 +133,99 @@ public static class NoteEndpoints
         {
             return Results.Unauthorized();
         }
+        catch (MongoException ex)
+        {
+            Console.WriteLine($"Erro MongoDB: {ex.Message}");
+            return Results.Problem("Erro interno do servidor ao salvar nota");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erro geral: {ex.Message}");
+            return Results.Problem("Erro interno do servidor");
+        }
     }
 
     private static async Task<IResult> UpdateNote(
-        HttpContext context, 
-        string id, 
-        UpdateNoteRequest request, 
-        IDataStore dataStore)
+        HttpContext context,
+        string id,
+        UpdateNoteRequest request,
+        IDataStore dataStore,
+        IAiService aiService) 
     {
+        var userId = context.GetUserIdOrThrow();
+
+        
+        // Validate category exists if provided
+        if (!string.IsNullOrEmpty(request.CategoryId))
+        {
+            var category = await dataStore.GetCategoryByIdAsync(request.CategoryId, userId);
+            if (category == null)
+            {
+                return Results.BadRequest("Category not found");
+            }
+        }
+
+
+       
+        if (string.IsNullOrWhiteSpace(request.Title))
+            return Results.BadRequest("Title is required");
+
+        if (string.IsNullOrWhiteSpace(request.Content))
+            return Results.BadRequest("Content is required");
+        
+        var existingNote = await dataStore.GetNoteByIdAsync(id, userId);
+        if (existingNote == null)
+        {
+            return Results.NotFound();
+        }
+
+      
+
+        existingNote.Title = request.Title.Trim();
+        existingNote.Content = request.Content.Trim();
+        existingNote.CategoryId = request.CategoryId;
+        existingNote.UpdatedAt = DateTime.UtcNow;
+
         try
         {
-            var userId = context.GetUserIdOrThrow();
-            
-            var existingNote = await dataStore.GetNoteByIdAsync(id, userId);
-            if (existingNote == null)
-            {
-                return Results.NotFound();
-            }
+            var updatedNote = await dataStore.UpdateNoteAsync(existingNote);
 
-            // Validate category exists if provided
-            if (!string.IsNullOrEmpty(request.CategoryId))
+            // Gerar resumo se habilitado
+            if (request.GenerateSummary && !string.IsNullOrWhiteSpace(updatedNote.Content))
             {
-                var category = await dataStore.GetCategoryByIdAsync(request.CategoryId, userId);
-                if (category == null)
+                try
                 {
-                    return Results.BadRequest("Category not found");
+                    var summary = await aiService.GenerateSummaryAsync(
+                        updatedNote.Content,
+                        request.AiProvider);
+
+                    if (!string.IsNullOrEmpty(summary))
+                    {
+                        updatedNote.Summary = summary;
+                        await dataStore.UpdateNoteAsync(updatedNote);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Erro ao gerar resumo: {ex.Message}");
                 }
             }
 
-            // Update properties
-            if (!string.IsNullOrEmpty(request.Title))
-                existingNote.Title = request.Title;
-            if (!string.IsNullOrEmpty(request.Content))
-                existingNote.Content = request.Content;
-            if (request.Summary != null)
-                existingNote.Summary = request.Summary;
-            if (request.AudioUrl != null)
-                existingNote.AudioUrl = request.AudioUrl;
-            if (request.CategoryId != null)
-                existingNote.CategoryId = request.CategoryId;
-
-            var updatedNote = await dataStore.UpdateNoteAsync(existingNote);
-            return updatedNote != null ? Results.Ok(updatedNote) : Results.NotFound();
+            return Results.Ok(updatedNote);
         }
         catch (UnauthorizedAccessException)
         {
             return Results.Unauthorized();
+        }
+        catch (MongoException ex)
+        {
+            Console.WriteLine($"Erro MongoDB: {ex.Message}");
+            return Results.Problem("Erro interno do servidor ao atualizar nota");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erro geral: {ex.Message}");
+            return Results.Problem("Erro interno do servidor");
         }
     }
 
