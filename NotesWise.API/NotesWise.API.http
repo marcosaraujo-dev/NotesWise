@@ -1,0 +1,104 @@
+@NotesWiseAPIHostAddress = http://localhost:5181
+@supabaseToken = 
+@categoryId = 
+@noteId = 
+@flashcardId = 
+
+### Health Check
+GET {{NotesWiseAPIHostAddress}}/health
+
+### Get Categories
+GET {{NotesWiseAPIHostAddress}}/api/categories
+Authorization: Bearer {{supabaseToken}}
+
+### Create Category
+POST {{NotesWiseAPIHostAddress}}/api/categories
+Authorization: Bearer {{supabaseToken}}
+Content-Type: application/json
+
+{
+  "name": "Work Notes",
+  "color": "#3b82f6"
+}
+
+### Update Category
+PUT {{NotesWiseAPIHostAddress}}/api/categories/{{categoryId}}
+Authorization: Bearer {{supabaseToken}}
+Content-Type: application/json
+
+{
+  "name": "Updated Work Notes",
+  "color": "#ef4444"
+}
+
+### Delete Category
+DELETE {{NotesWiseAPIHostAddress}}/api/categories/{{categoryId}}
+Authorization: Bearer {{supabaseToken}}
+
+### Get Notes
+GET {{NotesWiseAPIHostAddress}}/api/notes
+
+### Get Notes by Category
+GET {{NotesWiseAPIHostAddress}}/api/notes?categoryId={{categoryId}}
+Authorization: Bearer {{supabaseToken}}
+
+### Get Specific Note
+GET {{NotesWiseAPIHostAddress}}/api/notes/{{noteId}}
+Authorization: Bearer {{supabaseToken}}
+
+### Create Note
+POST {{NotesWiseAPIHostAddress}}/api/notes
+Authorization: Bearer {{supabaseToken}}
+Content-Type: application/json
+
+{
+  "title": "My First Note",
+  "content": "A presente nota tem como objetivo registrar de forma clara e organizada as principais informações referentes à tarefa em execução. Foram levantados os pontos essenciais para garantir transparência no processo, bem como os detalhes necessários para futuras consultas ou acompanhamentos. Dessa forma, busca-se estabelecer um histórico que auxilie tanto na tomada de decisão quanto no monitoramento dos resultados alcançados. Durante a execução da atividade, foram observados aspectos técnicos e operacionais que merecem destaque. Entre eles, estão as etapas concluídas, as ferramentas utilizadas e eventuais dificuldades encontradas, que foram devidamente tratadas ou registradas para ajustes posteriores. Essa abordagem permite não apenas evidenciar os avanços já obtidos, mas também mapear oportunidades de melhoria no fluxo de trabalho. Por fim, esta nota cumpre o papel de consolidar as informações em um documento único, garantindo clareza, rastreabilidade e alinhamento com os objetivos definidos previamente. Espera-se que este registro sirva como base para futuras referências e como instrumento de apoio ao time, promovendo maior eficiência e consistência nas próximas entregas relacionadas à tarefa em questão."
+}
+
+### Update Note
+PUT {{NotesWiseAPIHostAddress}}/api/notes/{{noteId}}
+Authorization: Bearer {{supabaseToken}}
+Content-Type: application/json
+
+{
+  "title": "Updated Note Title",
+  "content": "Updated content with more information.",
+  "summary": "Updated summary"
+}
+
+### Delete Note
+DELETE {{NotesWiseAPIHostAddress}}/api/notes/{{noteId}}
+Authorization: Bearer {{supabaseToken}}
+
+### Get All Flashcards
+GET {{NotesWiseAPIHostAddress}}/api/flashcards
+Authorization: Bearer {{supabaseToken}}
+
+### Get Flashcards for Note
+GET {{NotesWiseAPIHostAddress}}/api/notes/{{noteId}}/flashcards
+Authorization: Bearer {{supabaseToken}}
+
+### Create Flashcards for Note
+POST {{NotesWiseAPIHostAddress}}/api/notes/{{noteId}}/flashcards
+Authorization: Bearer {{supabaseToken}}
+Content-Type: application/json
+
+{
+  "flashcards": [
+    {
+      "question": "What is the main topic of this note?",
+      "answer": "The main topic is about API development with .NET"
+    },
+    {
+      "question": "What database are we using?",
+      "answer": "We are using in-memory storage for this implementation"
+    }
+  ]
+}
+
+### Delete Flashcard
+DELETE {{NotesWiseAPIHostAddress}}/api/flashcards/{{flashcardId}}
+Authorization: Bearer {{supabaseToken}}
+
+###
