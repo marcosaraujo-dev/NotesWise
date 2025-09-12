@@ -25,6 +25,7 @@ interface SidebarProps {
   selectedCategory: string | null;
   currentView: 'notes' | 'flashcards';
   onSelectNote: (note: any) => void;
+  onSelectFlashcardNote?: (note: any) => void;
   onSelectCategory: (categoryId: string | null) => void;
   onNotesChange: () => void;
   onCategoriesChange: () => void;
@@ -39,6 +40,7 @@ export const Sidebar = ({
   selectedCategory,
   currentView,
   onSelectNote,
+  onSelectFlashcardNote,
   onSelectCategory,
   onNotesChange,
   onCategoriesChange,
@@ -111,7 +113,7 @@ export const Sidebar = ({
   if (currentView === 'flashcards') {
     // Group flashcards by note
     const flashcardsByNote = flashcards.reduce((acc, flashcard) => {
-      const note = notes.find(n => n.id === flashcard.note_id);
+      const note = notes.find(n => n.id === flashcard.noteId);
       if (note) {
         if (!acc[note.id]) {
           acc[note.id] = { note, flashcards: [] };
@@ -128,7 +130,7 @@ export const Sidebar = ({
             <div
               key={note.id}
               className="p-3 border border-border rounded-lg hover:bg-accent cursor-pointer"
-              onClick={() => onSelectNote(note)}
+              onClick={() => onSelectFlashcardNote ? onSelectFlashcardNote(note) : onSelectNote(note)}
             >
               <div className="flex items-center justify-between mb-2">
                 <h3 className="font-medium text-sm truncate">{note.title}</h3>
@@ -138,7 +140,7 @@ export const Sidebar = ({
               </div>
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <Calendar className="h-3 w-3" />
-                {formatDate(note.updated_at)}
+                {formatDate(note.updatedAt)}
               </div>
             </div>
           ))}
@@ -229,7 +231,7 @@ export const Sidebar = ({
       <ScrollArea className="flex-1 p-4">
         <div className="space-y-2">
           {notes.map((note) => {
-            const category = categories.find(c => c.id === note.category_id);
+            const category = categories.find(c => c.id === note.categoryId);
             return (
               <div
                 key={note.id}
@@ -271,7 +273,7 @@ export const Sidebar = ({
                   </div>
                   <div className="flex items-center gap-1 text-xs text-muted-foreground">
                     <Calendar className="h-3 w-3" />
-                    {formatDate(note.updated_at)}
+                    {formatDate(note.updatedAt)}
                   </div>
                 </div>
               </div>

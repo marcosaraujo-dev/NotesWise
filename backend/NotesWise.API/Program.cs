@@ -2,6 +2,7 @@ using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using NotesWise.API.Endpoints;
 using NotesWise.API.Extensions;
+using NotesWise.API.Middleware;
 using NotesWise.API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +12,8 @@ builder.Services.AddEndpointsApiExplorer();
 
 
 // Add services to the container
+builder.Services.AddAuthentication();
+builder.Services.AddAuthorization();
 builder.Services.AddOpenApi();
 
 // Add CORS
@@ -94,8 +97,10 @@ if (!app.Environment.IsDevelopment())
     app.UseHttpsRedirection();
 }
 
-// Use Supabase authentication middleware
-//app.UseSupabaseAuth();
+// Use authentication and authorization
+app.UseAuthentication();
+app.UseSupabaseAuth();
+app.UseAuthorization();
 
 // Map API endpoints
 app.MapCategoryEndpoints();
@@ -106,6 +111,60 @@ app.MapAiEndpoints();
 // Health check endpoint
 app.MapGet("/health", () => Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow }))
     .WithName("HealthCheck")
+    .WithOpenApi();
+
+// Debug auth endpoint
+app.MapGet("/debug/auth", (HttpContext context, IConfiguration config) =>
+{
+    var userId = context.Items["UserId"]?.ToString();
+    var hasAuthHeader = context.Request.Headers.Authorization.Count > 0;
+    var authHeader = context.Request.Headers.Authorization.FirstOrDefault();
+    
+    return Results.Ok(new
+    {
+        hasAuthHeader,
+        authHeaderValue = hasAuthHeader ? authHeader?[..20] + "..." : null,
+        userId,
+        isAuthenticated = !string.IsNullOrEmpty(userId),
+        userClaims = context.User?.Claims?.Select(c => new { c.Type, c.Value }).ToList(),
+        supabaseConfig = new
+        {
+            url = config["Supabase:Url"],
+            hasKey = !string.IsNullOrEmpty(config["Supabase:Key"]),
+            jwksEndpoint = $"{config["Supabase:Url"]}/auth/v1/jwks"
+        }
+    });
+})
+    .WithName("DebugAuth")
+    .WithOpenApi();
+
+// Test JWKS endpoint
+app.MapGet("/debug/jwks", async (IConfiguration config, HttpClient httpClient) =>
+{
+    try
+    {
+        var jwksUrl = $"{config["Supabase:Url"]}/auth/v1/jwks";
+        var response = await httpClient.GetAsync(jwksUrl);
+        var content = await response.Content.ReadAsStringAsync();
+        
+        return Results.Ok(new
+        {
+            jwksUrl,
+            status = response.StatusCode,
+            content = response.IsSuccessStatusCode ? content : null,
+            error = !response.IsSuccessStatusCode ? content : null
+        });
+    }
+    catch (Exception ex)
+    {
+        return Results.Ok(new
+        {
+            error = ex.Message,
+            type = ex.GetType().Name
+        });
+    }
+})
+    .WithName("TestJWKS")
     .WithOpenApi();
 
 app.Run();

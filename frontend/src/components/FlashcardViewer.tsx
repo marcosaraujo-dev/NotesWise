@@ -24,11 +24,12 @@ interface FlashcardViewerProps {
   flashcards: any[];
   notes: any[];
   onFlashcardsChange: () => void;
+  initialSelectedNoteId?: string;
 }
 
-export const FlashcardViewer = ({ flashcards, notes, onFlashcardsChange }: FlashcardViewerProps) => {
+export const FlashcardViewer = ({ flashcards, notes, onFlashcardsChange, initialSelectedNoteId }: FlashcardViewerProps) => {
   const { toast } = useToast();
-  const [selectedNoteId, setSelectedNoteId] = useState<string>("");
+  const [selectedNoteId, setSelectedNoteId] = useState<string>(initialSelectedNoteId || "");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showAnswer, setShowAnswer] = useState(false);
   const [isShuffled, setIsShuffled] = useState(false);
@@ -43,9 +44,16 @@ export const FlashcardViewer = ({ flashcards, notes, onFlashcardsChange }: Flash
   const [isPlayingAnswer, setIsPlayingAnswer] = useState(false);
   const [audioUrls, setAudioUrls] = useState<{[key: string]: {question?: string, answer?: string}}>({});
 
+  // Sync selectedNoteId with prop changes
+  useEffect(() => {
+    if (initialSelectedNoteId !== undefined) {
+      setSelectedNoteId(initialSelectedNoteId);
+    }
+  }, [initialSelectedNoteId]);
+
   useEffect(() => {
     if (selectedNoteId) {
-      const noteFlashcards = flashcards.filter(fc => fc.note_id === selectedNoteId);
+      const noteFlashcards = flashcards.filter(fc => fc.noteId === selectedNoteId);
       setFilteredFlashcards(noteFlashcards);
     } else {
       setFilteredFlashcards(flashcards);
@@ -55,7 +63,7 @@ export const FlashcardViewer = ({ flashcards, notes, onFlashcardsChange }: Flash
   }, [selectedNoteId, flashcards]);
 
   const currentFlashcard = filteredFlashcards[currentIndex];
-  const currentNote = currentFlashcard ? notes.find(n => n.id === currentFlashcard.note_id) : null;
+  const currentNote = currentFlashcard ? notes.find(n => n.id === currentFlashcard.noteId) : null;
 
   const nextCard = () => {
     if (currentIndex < filteredFlashcards.length - 1) {
@@ -86,7 +94,7 @@ export const FlashcardViewer = ({ flashcards, notes, onFlashcardsChange }: Flash
 
   const resetOrder = () => {
     if (selectedNoteId) {
-      const noteFlashcards = flashcards.filter(fc => fc.note_id === selectedNoteId);
+      const noteFlashcards = flashcards.filter(fc => fc.noteId === selectedNoteId);
       setFilteredFlashcards(noteFlashcards);
     } else {
       setFilteredFlashcards(flashcards);
@@ -314,7 +322,7 @@ export const FlashcardViewer = ({ flashcards, notes, onFlashcardsChange }: Flash
               <SelectContent>
                 <SelectItem value="all">Todas as anotações</SelectItem>
                 {notes
-                  .filter(note => flashcards.some(fc => fc.note_id === note.id))
+                  .filter(note => flashcards.some(fc => fc.noteId === note.id))
                   .map((note) => (
                     <SelectItem key={note.id} value={note.id}>
                       {note.title}
@@ -351,7 +359,7 @@ export const FlashcardViewer = ({ flashcards, notes, onFlashcardsChange }: Flash
               <SelectContent>
                 <SelectItem value="all">Todas as anotações</SelectItem>
                 {notes
-                  .filter(note => flashcards.some(fc => fc.note_id === note.id))
+                  .filter(note => flashcards.some(fc => fc.noteId === note.id))
                   .map((note) => (
                     <SelectItem key={note.id} value={note.id}>
                       {note.title}

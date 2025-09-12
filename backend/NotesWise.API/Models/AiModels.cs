@@ -3,6 +3,8 @@ using System.Text.Json.Serialization;
 namespace NotesWise.API.Services.Models
 {
 
+
+
     // ========================================
     // Request/Response models para endpoints da API
     // ========================================

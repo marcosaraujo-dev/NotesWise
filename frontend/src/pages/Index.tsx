@@ -25,6 +25,7 @@ const Index = () => {
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [currentView, setCurrentView] = useState<'notes' | 'flashcards'>('notes');
+  const [selectedFlashcardNoteId, setSelectedFlashcardNoteId] = useState<string>("");
   const [showAuthDialog, setShowAuthDialog] = useState(false);
 
   useEffect(() => {
@@ -64,6 +65,29 @@ const Index = () => {
     }
   };
 
+  const handleNoteSaved = async (savedNote?: Note) => {
+    // Reload the notes list
+    await loadNotes();
+    
+    // If we have the saved note data, update selectedNote to reflect the real note
+    if (savedNote) {
+      setSelectedNote(savedNote);
+    }
+  };
+
+  const handleNoteSelected = (note: Note | null) => {
+    // If we're in flashcard view and selecting a note, switch to notes view
+    if (note && currentView === 'flashcards') {
+      setCurrentView('notes');
+    }
+    setSelectedNote(note);
+  };
+
+  const handleFlashcardNoteSelected = (note: Note) => {
+    // When clicking a flashcard in sidebar, filter flashcards by that note
+    setSelectedFlashcardNoteId(note.id);
+  };
+
   const loadCategories = async () => {
     try {
       const data = await apiClient.getCategories();
@@ -97,12 +121,12 @@ const Index = () => {
     setNotes([]);
     setCategories([]);
     setFlashcards([]);
-    setSelectedNote(null);
+    handleNoteSelected(null);
   };
 
   const createNewNote = () => {
     const newNote: Note = {
-      id: 'new',
+      id: `new-${Date.now()}`, // Unique ID for each new note to trigger useEffect
       title: 'Nova Anotação',
       content: '',
       categoryId: selectedCategory || undefined,
@@ -203,7 +227,8 @@ const Index = () => {
           selectedNote={selectedNote}
           selectedCategory={selectedCategory}
           currentView={currentView}
-          onSelectNote={setSelectedNote}
+          onSelectNote={handleNoteSelected}
+          onSelectFlashcardNote={handleFlashcardNoteSelected}
           onSelectCategory={setSelectedCategory}
           onNotesChange={loadNotes}
           onCategoriesChange={loadCategories}
@@ -218,8 +243,8 @@ const Index = () => {
             <NoteEditor
               note={selectedNote}
               categories={categories}
-              onSave={loadNotes}
-              onClose={() => setSelectedNote(null)}
+              onSave={handleNoteSaved}
+              onClose={() => handleNoteSelected(null)}
             />
           ) : (
             <div className="flex-1 flex items-center justify-center">
@@ -237,6 +262,7 @@ const Index = () => {
             flashcards={flashcards}
             notes={notes}
             onFlashcardsChange={loadFlashcards}
+            initialSelectedNoteId={selectedFlashcardNoteId}
           />
         )}
       </div>

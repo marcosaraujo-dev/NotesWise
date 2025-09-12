@@ -24,16 +24,19 @@ import {
 interface NoteEditorProps {
   note: any;
   categories: any[];
-  onSave: () => void;
+  onSave: (savedNote?: any) => void;
   onClose: () => void;
 }
 
 export const NoteEditor = ({ note, categories, onSave, onClose }: NoteEditorProps) => {
   const { toast } = useToast();
+  
+  // Helper function to check if this is a new note
+  const isNewNote = () => note.id.toString().startsWith('new');
   const [title, setTitle] = useState(note.title);
   const [content, setContent] = useState(note.content);
   const [summary, setSummary] = useState(note.summary || "");
-  const [categoryId, setCategoryId] = useState(note.category_id || "");
+  const [categoryId, setCategoryId] = useState(note.categoryId || "");
   const [flashcards, setFlashcards] = useState<any[]>([]);
   
   const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
@@ -45,14 +48,29 @@ export const NoteEditor = ({ note, categories, onSave, onClose }: NoteEditorProp
   const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
+  // Sync state with note prop changes
   useEffect(() => {
-    if (note.id !== 'new') {
+    setTitle(note.title);
+    setContent(note.content);
+    setSummary(note.summary || "");
+    setCategoryId(note.categoryId || "");
+    setAudioUrl(note.audioUrl || null);
+    setFlashcards([]);
+    setIsPlaying(false);
+    
+    // Stop any playing audio when switching notes
+    if (audioElement) {
+      audioElement.pause();
+      audioElement.currentTime = 0;
+    }
+    
+    if (!isNewNote()) {
       loadFlashcards();
     }
-  }, [note.id]);
+  }, [note.id, note.title, note.content, note.summary, note.categoryId, note.audioUrl]);
 
   const loadFlashcards = async () => {
-    if (note.id === 'new') return;
+    if (isNewNote()) return;
     
     try {
       const data = await apiClient.getFlashcardsByNoteId(note.id);
@@ -74,8 +92,10 @@ export const NoteEditor = ({ note, categories, onSave, onClose }: NoteEditorProp
 
     setIsSaving(true);
     try {
-      if (note.id === 'new') {
-        await apiClient.createNote({
+      let savedNote;
+      
+      if (isNewNote()) {
+        savedNote = await apiClient.createNote({
           title: title.trim(),
           content: content.trim(),
           summary: summary.trim() || undefined,
@@ -83,7 +103,7 @@ export const NoteEditor = ({ note, categories, onSave, onClose }: NoteEditorProp
           audioUrl: audioUrl || undefined,
         });
       } else {
-        await apiClient.updateNote(note.id, {
+        savedNote = await apiClient.updateNote(note.id, {
           title: title.trim(),
           content: content.trim(),
           summary: summary.trim() || undefined,
@@ -92,12 +112,21 @@ export const NoteEditor = ({ note, categories, onSave, onClose }: NoteEditorProp
         });
       }
 
+      // Update local state with saved data to ensure consistency
+      if (savedNote) {
+        setTitle(savedNote.title);
+        setContent(savedNote.content);
+        setSummary(savedNote.summary || "");
+        setCategoryId(savedNote.categoryId || "");
+        setAudioUrl(savedNote.audioUrl || null);
+      }
+
       toast({
         title: "Sucesso!",
         description: "Anotação salva com sucesso.",
       });
       
-      onSave();
+      onSave(savedNote); // Pass saved note data
     } catch (error) {
       console.error('Error saving note:', error);
       toast({
@@ -125,7 +154,7 @@ export const NoteEditor = ({ note, categories, onSave, onClose }: NoteEditorProp
     try {
       let summaryResponse : GenerateSummaryResponse;
 
-      if (note?.id){
+      if (note?.id && !isNewNote()){
         summaryResponse = await apiClient.generateNoteSummary(note.id);
       } else {
         summaryResponse = await apiClient.generateSummary({
@@ -210,7 +239,7 @@ export const NoteEditor = ({ note, categories, onSave, onClose }: NoteEditorProp
       return;
     }
 
-    if (note.id === 'new') {
+    if (isNewNote()) {
       toast({
         title: "Erro",
         description: "Salve a anotação antes de gerar flashcards",
@@ -371,7 +400,7 @@ export const NoteEditor = ({ note, categories, onSave, onClose }: NoteEditorProp
 
               <Button
                 onClick={generateFlashcards}
-                disabled={isGeneratingFlashcards || (!content.trim() && !summary.trim()) || note.id === 'new'}
+                disabled={isGeneratingFlashcards || (!content.trim() && !summary.trim()) || isNewNote()}
                 variant="outline"
                 className="w-full"
               >

@@ -17,10 +17,13 @@ public interface IDataStore
     Task<Note> CreateNoteAsync(Note note);
     Task<Note?> UpdateNoteAsync(Note note);
     Task<bool> DeleteNoteAsync(string id, string userId);
-    
+
+    // Flashcards
     // Flashcards
     Task<IEnumerable<Flashcard>> GetFlashcardsAsync(string userId);
     Task<IEnumerable<Flashcard>> GetFlashcardsByNoteIdAsync(string noteId);
+    Task<Flashcard?> GetFlashcardByIdAsync(string id);
     Task<Flashcard> CreateFlashcardAsync(Flashcard flashcard);
+    Task<Flashcard?> UpdateFlashcardAsync(Flashcard flashcard);
     Task<bool> DeleteFlashcardAsync(string id);
 }

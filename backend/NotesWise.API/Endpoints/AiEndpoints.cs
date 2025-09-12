@@ -10,19 +10,18 @@ public static class AiEndpoints
     public static void MapAiEndpoints(this IEndpointRouteBuilder app)
     {
         var group = app.MapGroup("/api/ai")
-            .WithTags("AI")
-            .RequireAuthorization();
+            .WithTags("AI");
 
         // Endpoint para testar providers
         group.MapPost("/test-summary", TestSummary);
 
-        // Endpoint para verificar saúde dos providers
+        // Endpoint para verificar saï¿½de dos providers
         group.MapGet("/health", GetProvidersHealth);
 
-        // Endpoint para listar providers disponíveis
+        // Endpoint para listar providers disponï¿½veis
         group.MapGet("/providers", GetAvailableProviders);
 
-        // Endpoints para funcionalidades específicas
+        // Endpoints para funcionalidades especï¿½ficas
         group.MapPost("/generate-summary", GenerateSummary);
         group.MapPost("/generate-flashcards", GenerateFlashcards);
         group.MapPost("/generate-audio", GenerateAudio);
@@ -35,9 +34,7 @@ public static class AiEndpoints
     {
         try
         {
-            var userId = context.GetUserId();
-            if (string.IsNullOrEmpty(userId))
-                return Results.Unauthorized();
+            var userId = context.GetUserIdOrThrow();
 
             if (string.IsNullOrWhiteSpace(request.Content))
                 return Results.BadRequest("Content is required");
@@ -45,6 +42,10 @@ public static class AiEndpoints
             var summary = await aiService.GenerateSummaryAsync(request.Content);
 
             return Results.Ok(new GenerateSummaryResponse { Summary = summary });
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return Results.Unauthorized();
         }
         catch (Exception ex)
         {
@@ -62,9 +63,7 @@ public static class AiEndpoints
     {
         try
         {
-            var userId = context.GetUserId();
-            if (string.IsNullOrEmpty(userId))
-                return Results.Unauthorized();
+            var userId = context.GetUserIdOrThrow();
 
             if (string.IsNullOrWhiteSpace(request.Content))
                 return Results.BadRequest("Content is required");
@@ -72,6 +71,10 @@ public static class AiEndpoints
             var flashcards = await aiService.GenerateFlashcardsAsync(request.Content);
 
             return Results.Ok(new GenerateFlashcardsResponse { Flashcards = flashcards });
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return Results.Unauthorized();
         }
         catch (Exception ex)
         {
@@ -89,9 +92,7 @@ public static class AiEndpoints
     {
         try
         {
-            var userId = context.GetUserId();
-            if (string.IsNullOrEmpty(userId))
-                return Results.Unauthorized();
+            var userId = context.GetUserIdOrThrow();
 
             if (string.IsNullOrWhiteSpace(request.Text))
                 return Results.BadRequest("Text is required");
@@ -99,6 +100,10 @@ public static class AiEndpoints
             var audioContent = await aiService.GenerateAudioAsync(request.Text, request.Voice);
 
             return Results.Ok(new GenerateAudioResponse { AudioContent = audioContent });
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return Results.Unauthorized();
         }
         catch (Exception ex)
         {
@@ -115,15 +120,12 @@ public static class AiEndpoints
         TestSummaryRequest request,
         IAiService aiService)
     {
-        var userId = context.GetUserId();
-        if (string.IsNullOrEmpty(userId))
-            return Results.Unauthorized();
-
-        if (string.IsNullOrWhiteSpace(request.Content))
-            return Results.BadRequest("Content is required");
-
         try
         {
+            var userId = context.GetUserIdOrThrow();
+
+            if (string.IsNullOrWhiteSpace(request.Content))
+                return Results.BadRequest("Content is required");
             var summary = await aiService.GenerateSummaryAsync(request.Content, request.Provider);
 
             return Results.Ok(new
@@ -132,6 +134,10 @@ public static class AiEndpoints
                 Provider = request.Provider ?? "default",
                 IsSuccess = !string.IsNullOrEmpty(summary)
             });
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return Results.Unauthorized();
         }
         catch (Exception ex)
         {

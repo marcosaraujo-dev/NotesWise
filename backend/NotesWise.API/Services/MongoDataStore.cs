@@ -125,6 +125,7 @@ public class MongoDataStore : IDataStore
 
     #endregion
 
+
     #region Flashcards
 
     public async Task<IEnumerable<Flashcard>> GetFlashcardsAsync(string userId)
@@ -155,11 +156,27 @@ public class MongoDataStore : IDataStore
         return flashcard;
     }
 
+    public async Task<Flashcard?> GetFlashcardByIdAsync(string id)
+    {
+        return await _flashcards
+            .Find(f => f.Id == id)
+            .FirstOrDefaultAsync();
+    }
+
+    public async Task<Flashcard?> UpdateFlashcardAsync(Flashcard flashcard)
+    {
+        var result = await _flashcards.ReplaceOneAsync(
+            f => f.Id == flashcard.Id,
+            flashcard);
+
+        return result.MatchedCount > 0 ? flashcard : null;
+    }
+
     public async Task<bool> DeleteFlashcardAsync(string id)
     {
         var deleteResult = await _flashcards.DeleteOneAsync(f => f.Id == id);
         return deleteResult.DeletedCount > 0;
     }
 
-    #endregion
+    #endregion  
 }
