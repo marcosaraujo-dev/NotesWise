@@ -253,7 +253,7 @@ export const Sidebar = ({
                   </Button>
                 </div>
                 
-                <p className="text-xs text-muted-foreground truncate mb-2">
+                <p className="text-xs text-muted-foreground line-clamp-2 mb-2">
                   {note.content || "Sem conteúdo"}
                 </p>
                 
@@ -265,7 +265,7 @@ export const Sidebar = ({
                           className="w-2 h-2 rounded-full"
                           style={{ backgroundColor: category.color }}
                         />
-                        <span className="text-xs text-muted-foreground">
+                        <span className="text-xs text-muted-foreground truncate">
                           {category.name}
                         </span>
                       </div>

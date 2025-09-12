@@ -8,6 +8,7 @@ import { FlashcardViewer } from "@/components/FlashcardViewer";
 import { Plus, BookOpen, Users, LogOut } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AuthDialog } from "@/components/AuthDialog";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { apiClient, type Note as ApiNote, type Category as ApiCategory, type Flashcard as ApiFlashcard } from "@/lib/api-client";
 
 // Use API client types
@@ -177,18 +178,21 @@ const Index = () => {
   return (
     <div className="flex h-screen bg-background">
       {/* Sidebar */}
-      <div className="w-80 border-r border-border flex flex-col">
+      <div className="w-96 border-r border-border flex flex-col">
         <div className="p-4 border-b border-border">
           <div className="flex items-center justify-between mb-4">
             <h1 className="text-xl font-bold">Notes+AI</h1>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleSignOut}
-              className="h-8 w-8 p-0"
-            >
-              <LogOut className="h-4 w-4" />
-            </Button>
+            <div className="flex items-center gap-2">
+              <ThemeToggle />
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleSignOut}
+                className="h-8 w-8 p-0"
+              >
+                <LogOut className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
           
           <div className="flex gap-2 mb-4">
