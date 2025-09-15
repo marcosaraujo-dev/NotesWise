@@ -1,8 +1,8 @@
 @NotesWiseAPIHostAddress = http://localhost:5181
-@supabaseToken = 
+@supabaseToken = 7IP4eGb6K/lCZtSoCWfxIuH+0X69GCBi/rC4LECe/IgIQR7I3il1ye19Zc5y/1xuBlCPGCQ/+mGEwfuXPrjS4A==
 @categoryId = 
-@noteId = 
-@flashcardId = 
+@noteId = 68c49a7e436ea470839dbd8a
+@flashcardId = 2
 
 ### Health Check
 GET {{NotesWiseAPIHostAddress}}/health
@@ -37,6 +37,7 @@ Authorization: Bearer {{supabaseToken}}
 
 ### Get Notes
 GET {{NotesWiseAPIHostAddress}}/api/notes
+Authorization: Bearer {{supabaseToken}}
 
 ### Get Notes by Category
 GET {{NotesWiseAPIHostAddress}}/api/notes?categoryId={{categoryId}}
@@ -53,7 +54,9 @@ Content-Type: application/json
 
 {
   "title": "My First Note",
-  "content": "A presente nota tem como objetivo registrar de forma clara e organizada as principais informações referentes à tarefa em execução. Foram levantados os pontos essenciais para garantir transparência no processo, bem como os detalhes necessários para futuras consultas ou acompanhamentos. Dessa forma, busca-se estabelecer um histórico que auxilie tanto na tomada de decisão quanto no monitoramento dos resultados alcançados. Durante a execução da atividade, foram observados aspectos técnicos e operacionais que merecem destaque. Entre eles, estão as etapas concluídas, as ferramentas utilizadas e eventuais dificuldades encontradas, que foram devidamente tratadas ou registradas para ajustes posteriores. Essa abordagem permite não apenas evidenciar os avanços já obtidos, mas também mapear oportunidades de melhoria no fluxo de trabalho. Por fim, esta nota cumpre o papel de consolidar as informações em um documento único, garantindo clareza, rastreabilidade e alinhamento com os objetivos definidos previamente. Espera-se que este registro sirva como base para futuras referências e como instrumento de apoio ao time, promovendo maior eficiência e consistência nas próximas entregas relacionadas à tarefa em questão."
+  "content": "This is the content of my note with **markdown** support.",
+  "summary": "A brief summary of the note",
+  "categoryId": "{{categoryId}}"
 }
 
 ### Update Note
@@ -101,4 +104,22 @@ Content-Type: application/json
 DELETE {{NotesWiseAPIHostAddress}}/api/flashcards/{{flashcardId}}
 Authorization: Bearer {{supabaseToken}}
 
-###
+### Generate Audio
+
+POST {{NotesWiseAPIHostAddress}}/api/ai/generate-audio
+Content-Type: application/json
+
+{
+  "text": "Luis é moh gente boa.",
+  "voice": "burt"
+}
+
+### Generate Flashcards
+
+POST {{NotesWiseAPIHostAddress}}/api/ai/generate-flashcards
+Content-Type: application/json
+
+{
+  "content": "O Exército Brasileiro na Primeira República (1889 - 1930) era uma de várias forças militares terrestres presentes no Brasil, representando o governo federal, enquanto os estados e chefes locais possuíam as Forças Públicas (pequenos exércitos estaduais) e forças irregulares como os batalhões patrióticos. O período foi inaugurado e encerrado com intervenções políticas do Exército, a Proclamação da República e Revolução de 1930, e marcado por sua participação em diversos conflitos internos.[a] Profundas reformas do Exército, inspiradas no padrão europeu e na competição com o Exército Argentino, aumentaram suas capacidades tanto para a guerra quanto para a participação na sociedade nacional. A função do Exército era dupla, de defesa externa e manutenção da ordem interna, o que se refletia na sua distribuição, concentrada no Rio Grande do Sul e na capital federal no Rio de Janeiro. Ao início da República o Exército era uma força pequena, de menos de 15 mil homens,[b] organizada em pequenos batalhões ou forças equivalentes isoladas, sem unidades maiores permanentes. A mobilização era difícil. Os soldados eram incorporados pelo voluntariado ou recrutamento forçado, não tinham rotina de preparo militar e serviam por longas carreiras profissionais, sem incorporação a uma reserva.[c] Os oficiais tinham instrução acadêmica de teor civil na Escola Militar da Praia Vermelha (EMPV), os científicos, ou pouca ou nenhuma instrução, os tarimbeiros.[d] Na violenta década de 1890, essa força exibiu péssimo desempenho em campanhas como a Guerra de Canudos, motivando reformas implantadas por sucessivas administrações no Ministério da Guerra a partir da virada do século. O Estado-Maior do Exército (EME) foi criado em 1899 para servir de órgão de cúpula. O Exército Imperial Alemão tornou-se a principal influência externa em 1908, na administração de Hermes da Fonseca no Ministério da Guerra. Os Jovens Turcos, oficiais enviados para estagiar na Alemanha, lançaram um movimento por reformas militares. Até 1921 foi construída uma ordem de batalha moderna, com regiões militares, regimentos, brigadas e divisões, embora muitas unidades não chegassem a ser constituídas, ou existissem desfalcadas.[e] Novos armamentos alemães equiparam a tropa. O serviço militar obrigatório foi instituído através da Lei do Sorteio, mas somente durante a Primeira Guerra Mundial, quando a importância das Forças Armadas aumentou, foi possível implementá-lo em 1916. Através da rotação de levas anuais de conscritos, foi possível um aumento constante do efetivo, que chegava a até 50 mil homens em 1930.[f] A influência alemã deu lugar à Missão Militar Francesa, contratada em 1919.[g] Os sargentos ganharam importância à frente das novas unidades táticas, os grupos de combate,[h] e o Exército adquiriu seus primeiros blindados e aviões. Quase todo o equipamento era importado, pois a indústria bélica era inexpressiva. Nos anos 1920 já havia surgido uma nova geração de oficiais, profissionalizada na Escola Militar do Realengo, sucessora da EMPV. A progressão de carreira passou a depender de escolas novas ou reformadas como as de Aperfeiçoamento e Estado-Maior. As autoridades militares esperavam que as reformas produzissem oficiais mais leais à hierarquia, mas o resultado foram as revoltas tenentistas do baixo oficialato. A longo prazo, o fortalecimento da cúpula do Exército e a expansão do conceito de defesa nacional, iniciados nesse período, permitiram as intervenções militares de generais ocorridas mais tarde na história brasileira, como o golpe de Estado de 1937.[i]"
+}
+

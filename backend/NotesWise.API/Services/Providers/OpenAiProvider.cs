@@ -70,7 +70,7 @@ namespace NotesWise.API.Services.Providers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error generating summary with OpenAI");
+                _logger.LogError(ex, "Erro na geração do resumo com OpenAI");
                 return new AiServiceResponse
                 {
                     IsSuccess = false,
@@ -235,7 +235,7 @@ namespace NotesWise.API.Services.Providers
 
                 var responseContent = await response.Content.ReadAsStringAsync();
 
-                // Log da resposta para debug
+                
                 _logger.LogDebug("OpenAI Response: {Response}", responseContent);
 
                 var openAIResponse = JsonSerializer.Deserialize<OpenAIResponse>(responseContent, _jsonOptions);

@@ -1,0 +1,512 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2024-09-14T19:00:00.000Z",
+  "__export_source": "insomnia.desktop.app:v2023.5.8",
+  "resources": [
+    {
+      "_id": "wrk_noteswise",
+      "_type": "workspace",
+      "name": "NotesWise API",
+      "description": "API endpoints para o sistema NotesWise",
+      "scope": null
+    },
+    {
+      "_id": "env_base",
+      "_type": "environment",
+      "name": "Base Environment",
+      "data": {
+        "base_url": "http://localhost:5181",
+        "jwt_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJleGFtcGxlLXVzZXItaWQiLCJpYXQiOjE2MzQ1NjU0MDB9.dummy_token_replace_with_real"
+      },
+      "parentId": "wrk_noteswise"
+    },
+    {
+      "_id": "fld_categories",
+      "_type": "request_group",
+      "name": "Categories",
+      "description": "Endpoints para gerenciar categorias",
+      "parentId": "wrk_noteswise"
+    },
+    {
+      "_id": "req_get_categories",
+      "_type": "request",
+      "name": "Get Categories",
+      "url": "{{ _.base_url }}/api/categories",
+      "method": "GET",
+      "headers": [
+        {
+          "id": "header_auth",
+          "name": "Authorization",
+          "value": "Bearer {{ _.jwt_token }}"
+        }
+      ],
+      "parentId": "fld_categories"
+    },
+    {
+      "_id": "req_create_category",
+      "_type": "request",
+      "name": "Create Category",
+      "url": "{{ _.base_url }}/api/categories",
+      "method": "POST",
+      "headers": [
+        {
+          "id": "header_auth",
+          "name": "Authorization",
+          "value": "Bearer {{ _.jwt_token }}"
+        },
+        {
+          "id": "header_content_type",
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"Trabalho\",\n  \"color\": \"#3b82f6\"\n}"
+      },
+      "parentId": "fld_categories"
+    },
+    {
+      "_id": "req_update_category",
+      "_type": "request",
+      "name": "Update Category",
+      "url": "{{ _.base_url }}/api/categories/66e1234567890abcdef12345",
+      "method": "PUT",
+      "headers": [
+        {
+          "id": "header_auth",
+          "name": "Authorization",
+          "value": "Bearer {{ _.jwt_token }}"
+        },
+        {
+          "id": "header_content_type",
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"Trabalho Atualizado\",\n  \"color\": \"#ef4444\"\n}"
+      },
+      "parentId": "fld_categories"
+    },
+    {
+      "_id": "req_delete_category",
+      "_type": "request",
+      "name": "Delete Category",
+      "url": "{{ _.base_url }}/api/categories/66e1234567890abcdef12345",
+      "method": "DELETE",
+      "headers": [
+        {
+          "id": "header_auth",
+          "name": "Authorization",
+          "value": "Bearer {{ _.jwt_token }}"
+        }
+      ],
+      "parentId": "fld_categories"
+    },
+    {
+      "_id": "fld_notes",
+      "_type": "request_group",
+      "name": "Notes",
+      "description": "Endpoints para gerenciar notas",
+      "parentId": "wrk_noteswise"
+    },
+    {
+      "_id": "req_get_notes",
+      "_type": "request",
+      "name": "Get Notes",
+      "url": "{{ _.base_url }}/api/notes",
+      "method": "GET",
+      "headers": [
+        {
+          "id": "header_auth",
+          "name": "Authorization",
+          "value": "Bearer {{ _.jwt_token }}"
+        }
+      ],
+      "parentId": "fld_notes"
+    },
+    {
+      "_id": "req_get_notes_by_category",
+      "_type": "request",
+      "name": "Get Notes by Category",
+      "url": "{{ _.base_url }}/api/notes?categoryId=66e1234567890abcdef12345",
+      "method": "GET",
+      "headers": [
+        {
+          "id": "header_auth",
+          "name": "Authorization",
+          "value": "Bearer {{ _.jwt_token }}"
+        }
+      ],
+      "parentId": "fld_notes"
+    },
+    {
+      "_id": "req_get_note_by_id",
+      "_type": "request",
+      "name": "Get Note by ID",
+      "url": "{{ _.base_url }}/api/notes/66e1234567890abcdef12345",
+      "method": "GET",
+      "headers": [
+        {
+          "id": "header_auth",
+          "name": "Authorization",
+          "value": "Bearer {{ _.jwt_token }}"
+        }
+      ],
+      "parentId": "fld_notes"
+    },
+    {
+      "_id": "req_create_note",
+      "_type": "request",
+      "name": "Create Note",
+      "url": "{{ _.base_url }}/api/notes",
+      "method": "POST",
+      "headers": [
+        {
+          "id": "header_auth",
+          "name": "Authorization",
+          "value": "Bearer {{ _.jwt_token }}"
+        },
+        {
+          "id": "header_content_type",
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"title\": \"Minha Nova Nota\",\n  \"content\": \"Conteúdo da nota com informações importantes sobre desenvolvimento.\",\n  \"categoryId\": \"66e1234567890abcdef12345\",\n  \"generateSummary\": true\n}"
+      },
+      "parentId": "fld_notes"
+    },
+    {
+      "_id": "req_update_note",
+      "_type": "request",
+      "name": "Update Note",
+      "url": "{{ _.base_url }}/api/notes/66e1234567890abcdef12345",
+      "method": "PUT",
+      "headers": [
+        {
+          "id": "header_auth",
+          "name": "Authorization",
+          "value": "Bearer {{ _.jwt_token }}"
+        },
+        {
+          "id": "header_content_type",
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"title\": \"Nota Atualizada\",\n  \"content\": \"Conteúdo atualizado da nota.\",\n  \"summary\": \"Resumo manual da nota\",\n  \"generateSummary\": false\n}"
+      },
+      "parentId": "fld_notes"
+    },
+    {
+      "_id": "req_delete_note",
+      "_type": "request",
+      "name": "Delete Note",
+      "url": "{{ _.base_url }}/api/notes/66e1234567890abcdef12345",
+      "method": "DELETE",
+      "headers": [
+        {
+          "id": "header_auth",
+          "name": "Authorization",
+          "value": "Bearer {{ _.jwt_token }}"
+        }
+      ],
+      "parentId": "fld_notes"
+    },
+    {
+      "_id": "req_generate_note_summary",
+      "_type": "request",
+      "name": "Generate Note Summary",
+      "url": "{{ _.base_url }}/api/notes/66e1234567890abcdef12345/generate-summary",
+      "method": "POST",
+      "headers": [
+        {
+          "id": "header_auth",
+          "name": "Authorization",
+          "value": "Bearer {{ _.jwt_token }}"
+        }
+      ],
+      "parentId": "fld_notes"
+    },
+    {
+      "_id": "req_generate_note_audio",
+      "_type": "request",
+      "name": "Generate Note Audio",
+      "url": "{{ _.base_url }}/api/notes/66e1234567890abcdef12345/generate-audio",
+      "method": "POST",
+      "headers": [
+        {
+          "id": "header_auth",
+          "name": "Authorization",
+          "value": "Bearer {{ _.jwt_token }}"
+        },
+        {
+          "id": "header_content_type",
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"voice\": \"burt\"\n}"
+      },
+      "parentId": "fld_notes"
+    },
+    {
+      "_id": "req_generate_note_flashcards",
+      "_type": "request",
+      "name": "Generate Note Flashcards",
+      "url": "{{ _.base_url }}/api/notes/66e1234567890abcdef12345/flashcards/generate",
+      "method": "POST",
+      "headers": [
+        {
+          "id": "header_auth",
+          "name": "Authorization",
+          "value": "Bearer {{ _.jwt_token }}"
+        }
+      ],
+      "parentId": "fld_notes"
+    },
+    {
+      "_id": "fld_flashcards",
+      "_type": "request_group",
+      "name": "Flashcards",
+      "description": "Endpoints para gerenciar flashcards",
+      "parentId": "wrk_noteswise"
+    },
+    {
+      "_id": "req_get_flashcards",
+      "_type": "request",
+      "name": "Get All Flashcards",
+      "url": "{{ _.base_url }}/api/flashcards",
+      "method": "GET",
+      "headers": [
+        {
+          "id": "header_auth",
+          "name": "Authorization",
+          "value": "Bearer {{ _.jwt_token }}"
+        }
+      ],
+      "parentId": "fld_flashcards"
+    },
+    {
+      "_id": "req_get_flashcards_by_note",
+      "_type": "request",
+      "name": "Get Flashcards by Note",
+      "url": "{{ _.base_url }}/api/notes/66e1234567890abcdef12345/flashcards",
+      "method": "GET",
+      "headers": [
+        {
+          "id": "header_auth",
+          "name": "Authorization",
+          "value": "Bearer {{ _.jwt_token }}"
+        }
+      ],
+      "parentId": "fld_flashcards"
+    },
+    {
+      "_id": "req_create_flashcards",
+      "_type": "request",
+      "name": "Create Flashcards",
+      "url": "{{ _.base_url }}/api/notes/66e1234567890abcdef12345/flashcards",
+      "method": "POST",
+      "headers": [
+        {
+          "id": "header_auth",
+          "name": "Authorization",
+          "value": "Bearer {{ _.jwt_token }}"
+        },
+        {
+          "id": "header_content_type",
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"flashcards\": [\n    {\n      \"question\": \"O que é React?\",\n      \"answer\": \"Uma biblioteca JavaScript para construir interfaces de usuário.\"\n    },\n    {\n      \"question\": \"Qual é a diferença entre props e state?\",\n      \"answer\": \"Props são dados passados de componente pai para filho, state é dados internos do componente.\"\n    }\n  ]\n}"
+      },
+      "parentId": "fld_flashcards"
+    },
+    {
+      "_id": "req_delete_flashcard",
+      "_type": "request",
+      "name": "Delete Flashcard",
+      "url": "{{ _.base_url }}/api/flashcards/66e1234567890abcdef12345",
+      "method": "DELETE",
+      "headers": [
+        {
+          "id": "header_auth",
+          "name": "Authorization",
+          "value": "Bearer {{ _.jwt_token }}"
+        }
+      ],
+      "parentId": "fld_flashcards"
+    },
+    {
+      "_id": "req_generate_flashcard_audio",
+      "_type": "request",
+      "name": "Generate Flashcard Audio",
+      "url": "{{ _.base_url }}/api/flashcards/66e1234567890abcdef12345/generate-audio",
+      "method": "POST",
+      "headers": [
+        {
+          "id": "header_auth",
+          "name": "Authorization",
+          "value": "Bearer {{ _.jwt_token }}"
+        },
+        {
+          "id": "header_content_type",
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"voice\": \"burt\",\n  \"type\": \"both\"\n}"
+      },
+      "parentId": "fld_flashcards"
+    },
+    {
+      "_id": "fld_ai",
+      "_type": "request_group",
+      "name": "AI Services",
+      "description": "Endpoints para funcionalidades de IA",
+      "parentId": "wrk_noteswise"
+    },
+    {
+      "_id": "req_generate_summary",
+      "_type": "request",
+      "name": "Generate Summary",
+      "url": "{{ _.base_url }}/api/ai/generate-summary",
+      "method": "POST",
+      "headers": [
+        {
+          "id": "header_auth",
+          "name": "Authorization",
+          "value": "Bearer {{ _.jwt_token }}"
+        },
+        {
+          "id": "header_content_type",
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"content\": \"JavaScript é uma linguagem de programação versátil que pode ser usada tanto no frontend quanto no backend. No frontend, é usado para criar interações dinâmicas em páginas web. No backend, pode ser usado com Node.js para criar servidores e APIs. JavaScript também suporta programação orientada a objetos e funcional.\"\n}"
+      },
+      "parentId": "fld_ai"
+    },
+    {
+      "_id": "req_generate_flashcards_ai",
+      "_type": "request",
+      "name": "Generate Flashcards from Content",
+      "url": "{{ _.base_url }}/api/ai/generate-flashcards",
+      "method": "POST",
+      "headers": [
+        {
+          "id": "header_auth",
+          "name": "Authorization",
+          "value": "Bearer {{ _.jwt_token }}"
+        },
+        {
+          "id": "header_content_type",
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"content\": \"React é uma biblioteca JavaScript para construir interfaces de usuário. Foi criada pelo Facebook e é baseada em componentes. Os componentes podem ter estado (state) e receber propriedades (props). O Virtual DOM é uma das principais características do React, permitindo atualizações eficientes da interface.\"\n}"
+      },
+      "parentId": "fld_ai"
+    },
+    {
+      "_id": "req_generate_audio_ai",
+      "_type": "request",
+      "name": "Generate Audio from Text",
+      "url": "{{ _.base_url }}/api/ai/generate-audio",
+      "method": "POST",
+      "headers": [
+        {
+          "id": "header_auth",
+          "name": "Authorization",
+          "value": "Bearer {{ _.jwt_token }}"
+        },
+        {
+          "id": "header_content_type",
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"text\": \"Este é um exemplo de texto que será convertido em áudio usando inteligência artificial.\",\n  \"voice\": \"burt\"\n}"
+      },
+      "parentId": "fld_ai"
+    },
+    {
+      "_id": "req_test_summary",
+      "_type": "request",
+      "name": "Test Summary with Provider",
+      "url": "{{ _.base_url }}/api/ai/test-summary",
+      "method": "POST",
+      "headers": [
+        {
+          "id": "header_auth",
+          "name": "Authorization",
+          "value": "Bearer {{ _.jwt_token }}"
+        },
+        {
+          "id": "header_content_type",
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"content\": \"Texto de exemplo para testar a geração de resumo\",\n  \"provider\": \"openai\"\n}"
+      },
+      "parentId": "fld_ai"
+    },
+    {
+      "_id": "req_providers_health",
+      "_type": "request",
+      "name": "Check Providers Health",
+      "url": "{{ _.base_url }}/api/ai/health",
+      "method": "GET",
+      "headers": [
+        {
+          "id": "header_auth",
+          "name": "Authorization",
+          "value": "Bearer {{ _.jwt_token }}"
+        }
+      ],
+      "parentId": "fld_ai"
+    },
+    {
+      "_id": "req_available_providers",
+      "_type": "request",
+      "name": "Get Available Providers",
+      "url": "{{ _.base_url }}/api/ai/providers",
+      "method": "GET",
+      "headers": [
+        {
+          "id": "header_auth",
+          "name": "Authorization",
+          "value": "Bearer {{ _.jwt_token }}"
+        }
+      ],
+      "parentId": "fld_ai"
+    }
+  ]
+}

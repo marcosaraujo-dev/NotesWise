@@ -1,189 +1,290 @@
-# NotesWise API
+# NotesWise
 
-A .NET 9 Web API that provides data storage endpoints for the NotesWise React application, using Supabase for authentication and in-memory storage for data.
+> Sistema inteligente de anotações com funcionalidades de IA para resumos automáticos, áudio e flashcards
 
-## Phase 1 Implementation Complete ✅
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
+![React](https://img.shields.io/badge/React-18.x-61dafb.svg)
+![.NET](https://img.shields.io/badge/.NET-9.0-512bd4.svg)
+![MongoDB](https://img.shields.io/badge/MongoDB-4.4+-47a248.svg)
 
-This implementation covers:
+## 📋 Visão Geral
 
-- ✅ .NET 9 Web API with minimal APIs
-- ✅ Supabase JWT authentication middleware  
-- ✅ In-memory storage service with singleton scope
-- ✅ Complete CRUD endpoints with proper user filtering
-- ✅ CORS configuration for React app
-- ✅ API testing setup
+NotesWise é uma aplicação híbrida de notas que combina a simplicidade do gerenciamento tradicional de anotações com o poder da inteligência artificial. O sistema permite criar, organizar e estudar suas anotações com funcionalidades avançadas como geração automática de resumos, conversão de texto para áudio e criação de flashcards para estudo.
 
-## Architecture
+### ✨ Principais Funcionalidades
 
-### Hybrid Authentication Approach
-- **Frontend Authentication**: Continues using Supabase Auth (login, register, session management)
-- **API Authorization**: Validates Supabase JWT tokens to authorize data operations
-- **User Identification**: Extracts `user_id` from validated JWT tokens for data filtering
+- **📝 Gerenciamento de Notas**: Criação, edição e organização de anotações com suporte a Markdown
+- **🎨 Categorização**: Organize suas notas por categorias com códigos de cores personalizados
+- **🤖 IA Integrada**: Resumos automáticos gerados por OpenAI
+- **🔊 Síntese de Voz**: Conversão de texto para áudio usando ElevenLabs
+- **🃏 Flashcards**: Geração automática de flashcards para estudo baseado no conteúdo das notas
+- **🎵 Áudio Interativo**: Reprodução de áudio para notas e flashcards
+- **🌙 Temas**: Suporte a tema claro, escuro e automático (sistema)
+- **🔐 Autenticação Segura**: Sistema de login/registro com Supabase Auth
 
-### Data Models
-- **Categories**: User-specific note categories with color coding
-- **Notes**: Main content entities with markdown support, summaries, and audio URLs
-- **Flashcards**: Question/answer pairs linked to specific notes
+## 🏗️ Arquitetura do Sistema
 
-### In-Memory Storage
-- Thread-safe `ConcurrentDictionary` collections for each entity type
-- Singleton service registration ensures data persistence during application lifetime
-- Automatic cleanup of related data (flashcards when notes deleted, etc.)
+### Arquitetura Híbrida
 
-## Project Structure
+NotesWise utiliza uma arquitetura híbrida que combina o melhor de diferentes tecnologias:
 
 ```
-NotesWise.API/
-├── Models/                     # Data models and request/response DTOs
-│   ├── Category.cs
-│   ├── Note.cs
-│   └── Flashcard.cs
-├── Services/                   # Business logic services
-│   ├── IDataStore.cs
-│   └── InMemoryDataStore.cs
-├── Middleware/                 # Custom middleware
-│   └── SupabaseAuthMiddleware.cs
-├── Endpoints/                  # API endpoint definitions
-│   ├── CategoryEndpoints.cs
-│   ├── NoteEndpoints.cs
-│   └── FlashcardEndpoints.cs
-├── Extensions/                 # Extension methods
-│   └── HttpContextExtensions.cs
-├── Program.cs                  # Application configuration
-└── NotesWise.API.http         # HTTP test requests
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│                 │    │                 │    │                 │
+│   Frontend      │◄──►│   Backend       │◄──►│   Database      │
+│   React + TS    │    │   .NET 9 API    │    │   MongoDB       │
+│                 │    │                 │    │                 │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+         │                       │                       
+         ▼                       ▼                       
+┌─────────────────┐    ┌─────────────────┐              
+│                 │    │                 │              
+│ Supabase Auth   │    │ OpenAI/ElevenLabs│              
+│ (JWT Tokens)    │    │ (AI Functions)   │              
+│                 │    │                 │              
+└─────────────────┘    └─────────────────┘              
 ```
 
-## API Endpoints
+#### Componentes Principais:
 
-### Categories
-- `GET /api/categories` - Get user categories
-- `POST /api/categories` - Create category
-- `PUT /api/categories/{id}` - Update category  
-- `DELETE /api/categories/{id}` - Delete category
+- **Frontend**: React com TypeScript, TailwindCSS e shadcn/ui
+- **Backend**: .NET 9 Minimal API para gerenciamento de dados
+- **Autenticação**: Supabase Auth para login/registro + JWT validation no backend
+- **Banco de Dados**: MongoDB para persistência de dados
+- **IA**: Integração com OpenAI e ElevenLabs via Supabase Functions
 
-### Notes
-- `GET /api/notes` - Get user notes (with optional `?categoryId=` filter)
-- `GET /api/notes/{id}` - Get specific note
-- `POST /api/notes` - Create note
-- `PUT /api/notes/{id}` - Update note
-- `DELETE /api/notes/{id}` - Delete note
+## 🚀 Tecnologias Utilizadas
 
-### Flashcards
-- `GET /api/flashcards` - Get all user flashcards
-- `GET /api/notes/{noteId}/flashcards` - Get flashcards for specific note
-- `POST /api/notes/{noteId}/flashcards` - Create flashcards for note
-- `DELETE /api/flashcards/{id}` - Delete flashcard
+### Frontend
+- **React 18** com TypeScript
+- **Vite** para build e desenvolvimento
+- **TailwindCSS** para estilização
+- **shadcn/ui** componentes de interface
+- **React Query** para gerenciamento de estado do servidor
+- **React Hook Form** para formulários
+- **Supabase Client** para autenticação
 
-### Health
-- `GET /health` - Health check endpoint
+### Backend
+- **.NET 9** Minimal API
+- **MongoDB Driver** para persistência
+- **JWT Authentication** com Supabase
+- **OpenAPI/Swagger** para documentação
+- **CORS** configurado para desenvolvimento
 
-## Setup Instructions
+### Serviços Externos
+- **Supabase**: Autenticação e Functions para IA
+- **OpenAI**: Geração de resumos e flashcards
+- **ElevenLabs**: Síntese de voz
+- **MongoDB**: Banco de dados NoSQL
 
-### Prerequisites
-- .NET 9 SDK
-- Supabase JWT secret key
+## 📁 Estrutura do Projeto
 
-### Configuration
+```
+NotesWise/
+├── frontend/                 # Aplicação React
+│   ├── src/
+│   │   ├── components/      # Componentes reutilizáveis
+│   │   ├── pages/           # Páginas da aplicação
+│   │   ├── hooks/           # Custom hooks
+│   │   ├── lib/             # Utilitários e configurações
+│   │   └── integrations/    # Integrações externas
+│   ├── public/              # Arquivos estáticos
+│   └── README.md            # Documentação do frontend
+├── backend/                  # API .NET
+│   └── NotesWise.API/
+│       ├── Endpoints/       # Definições dos endpoints
+│       ├── Models/          # Modelos de dados
+│       ├── Services/        # Lógica de negócio
+│       ├── Middleware/      # Middleware customizado
+│       └── README.md        # Documentação do backend
+├── CLAUDE.md                # Instruções para desenvolvimento
+└── README.md                # Este arquivo
+```
 
-1. **Install dependencies**:
-   ```bash
-   cd notes-wise-backend/NotesWise/NotesWise.API
-   dotnet restore
-   ```
+## 🛠️ Configuração e Instalação
 
-2. **Configure Supabase JWT Secret**:
-   
-   Update `appsettings.json` and `appsettings.Development.json`:
-   ```json
-   {
-     "Supabase": {
-       "JwtSecret": "your-supabase-jwt-secret-here"
-     }
-   }
-   ```
+### Pré-requisitos
 
-   **To get your Supabase JWT secret:**
-   - Go to your Supabase project dashboard
-   - Navigate to Settings > API
-   - Copy the "JWT Secret" value
-   - This is used to verify JWT tokens issued by Supabase
+- **Node.js** 18+ e npm
+- **.NET 9 SDK**
+- **MongoDB** (local ou cloud)
+- **Conta Supabase** (para auth e AI functions)
 
-3. **Run the API**:
-   ```bash
-   dotnet run
-   ```
+### 1. Clone o Repositório
 
-   The API will start on `http://localhost:5000` (or `https://localhost:5001`)
+```bash
+git clone <repository-url>
+cd NotesWise
+```
 
-### Testing the API
+### 2. Configuração do Frontend
 
-1. **Health Check** (no auth required):
-   ```bash
-   curl http://localhost:5000/health
-   ```
+```bash
+cd frontend
+npm install
+cp .env.template .env
+# Configure as variáveis de ambiente no .env
+npm run dev
+```
 
-2. **Authenticated Requests**:
-   
-   First, get a Supabase JWT token from your React app's browser developer tools:
-   - Login to the React app
-   - Open browser dev tools → Application → Local Storage
-   - Find the Supabase session data containing the access_token
-   
-   Then use it in requests:
-   ```bash
-   curl -H "Authorization: Bearer YOUR_SUPABASE_JWT_TOKEN" \
-        http://localhost:5000/api/categories
-   ```
+### 3. Configuração do Backend
 
-3. **Use the HTTP file**:
-   - Open `NotesWise.API.http` in VS Code with REST Client extension
-   - Replace `{{supabaseToken}}` with your actual JWT token
-   - Click "Send Request" on any endpoint
+```bash
+cd backend/NotesWise.API
+dotnet restore
+# Configure appsettings.json com as credenciais
+dotnet run
+```
 
-## Security Features
+### 4. Variáveis de Ambiente
 
-### JWT Token Validation
-- Validates tokens using Supabase's JWT secret
-- Verifies token signature, issuer, audience, and expiration
-- Extracts user ID from token claims for authorization
+#### Frontend (.env)
+```env
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
 
-### User Data Isolation
-- All data operations filtered by authenticated user's ID
-- Users can only access their own categories, notes, and flashcards
-- Proper error handling for unauthorized access attempts
+#### Backend (appsettings.json)
+```json
+{
+  "Supabase": {
+    "JwtSecret": "your_supabase_jwt_secret"
+  },
+  "MongoDB": {
+    "ConnectionString": "mongodb://localhost:27017",
+    "DatabaseName": "NotesWise"
+  }
+}
+```
 
-### CORS Configuration
-- Configured for React development servers (ports 3000 and 5173)
-- Allows credentials for cookie-based auth flows
-- Production-ready CORS configuration included
+## 📊 Modelos de Dados
 
-## Next Steps (Phase 2)
+### Note (Nota)
+```json
+{
+  "id": "string",
+  "title": "string",
+  "content": "string",
+  "summary": "string",
+  "audioUrl": "string",
+  "categoryId": "string?",
+  "userId": "string",
+  "createdAt": "datetime",
+  "updatedAt": "datetime"
+}
+```
 
-Phase 2 will focus on frontend integration:
+### Category (Categoria)
+```json
+{
+  "id": "string",
+  "name": "string", 
+  "color": "string",
+  "userId": "string"
+}
+```
 
-1. **Create API Client Service** - Replace Supabase client with HTTP API calls
-2. **Update Authentication Flow** - Keep Supabase auth, use tokens for API calls
-3. **Replace Data Queries** - Update all components to use new API endpoints
-4. **Update Error Handling** - Handle API-specific error responses
-5. **Remove Supabase Dependencies** - Keep only auth-related Supabase usage
+### Flashcard
+```json
+{
+  "id": "string",
+  "noteId": "string",
+  "question": "string",
+  "answer": "string",
+  "questionAudioUrl": "string?",
+  "answerAudioUrl": "string?",
+  "createdAt": "datetime"
+}
+```
 
-## Development Notes
+## 🔧 Comandos de Desenvolvimento
 
-### In-Memory Storage Limitations
-- Data resets when API restarts
-- No persistence between application sessions
-- Suitable for development and testing
-- Can be easily replaced with database implementation later
+### Frontend
+```bash
+npm run dev          # Servidor de desenvolvimento
+npm run build        # Build para produção
+npm run lint         # Verificação de código
+npm run preview      # Preview da build
+```
 
-### Logging
-- Comprehensive logging for authentication and data operations
-- Debug-level logging for authentication middleware in development
-- Error tracking for troubleshooting
+### Backend
+```bash
+dotnet run           # Executar API
+dotnet build         # Build da API
+dotnet test          # Executar testes
+```
 
-### Error Handling
-- Consistent error responses across all endpoints
-- Proper HTTP status codes
-- User-friendly error messages
-- Security-conscious error details (no internal info leaked)
+### Aplicação Completa
+```bash
+# Terminal 1 - Backend
+cd backend/NotesWise.API && dotnet run --urls="http://localhost:5181"
 
-This completes Phase 1 of the migration plan. The API is ready for testing and frontend integration.
+# Terminal 2 - Frontend  
+cd frontend && npm run dev
+```
+
+## 🔑 Funcionalidades de IA
+
+### Resumos Automáticos
+- Geração inteligente de resumos usando GPT
+- Preservação do contexto e pontos principais
+- Integração transparente no fluxo de criação de notas
+
+### Flashcards Inteligentes
+- Criação automática de perguntas e respostas
+- Baseado no conteúdo das notas
+- Algoritmo de estudo com embaralhamento
+
+### Síntese de Voz
+- Conversão de texto para áudio natural
+- Múltiplas vozes disponíveis
+- Suporte para notas e flashcards
+
+## 🔐 Segurança
+
+- **Autenticação JWT**: Tokens seguros do Supabase
+- **Isolamento de Dados**: Cada usuário acessa apenas seus dados
+- **Middleware de Autorização**: Validação de tokens em todas as rotas
+- **CORS Configurado**: Proteção contra requisições não autorizadas
+- **Variáveis de Ambiente**: Credenciais protegidas
+
+## 📈 Roadmap
+
+### Versão Atual (v1.0)
+- ✅ Sistema completo de notas
+- ✅ Funcionalidades de IA
+- ✅ Sistema de temas
+- ✅ Autenticação segura
+
+### Próximas Versões
+- 🔄 Sincronização offline
+- 📱 Aplicativo mobile
+- 🤝 Compartilhamento de notas
+- 📊 Analytics de estudo
+- 🔍 Busca avançada com IA
+
+## 🤝 Contribuição
+
+1. Fork o projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
+3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
+4. Push para a branch (`git push origin feature/AmazingFeature`)
+5. Abra um Pull Request
+
+## 📜 Licença
+
+Este projeto está licenciado sob a MIT License - veja o arquivo [LICENSE](LICENSE) para detalhes.
+
+## 📞 Suporte
+
+Para dúvidas ou suporte:
+
+- 📧 Email: [marcos.araso@hotmaill.com]
+- 🐛 Issues: [GitHub Issues](link-para-issues)
+- 📖 Documentação: Veja os READMEs específicos em `/frontend` e `/backend`
+
+---
+
+<div align="center">
+  <p>Ptojeto Desenvolvido para o estudo de uso das APIs de IA.</p>
+</div>
